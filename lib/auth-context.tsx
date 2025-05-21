@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 
 export type User = {
   id: string;
@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { toast } = useToast();
 
   // Check if the user is logged in on initial load
   useEffect(() => {
