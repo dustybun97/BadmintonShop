@@ -1,8 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { productRoutes } from "./routes/product";
+import fastifyJwt from "fastify-jwt";
+import authenticate from "./plugins/authenticate";
+import authRoutes from "./routes/auth.routes";
 
 const server = fastify({
   logger: true,
@@ -37,6 +43,13 @@ server.register(productRoutes);
 server.get("/health", async () => {
   return { status: "ok" };
 });
+
+server.register(fastifyJwt, {
+  secret: process.env.JWT_SECRET!,
+});
+server.register(authenticate); // Register plugin
+
+server.register(authRoutes);
 
 // Start the server
 const start = async () => {
