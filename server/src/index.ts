@@ -6,9 +6,10 @@ import cors from "@fastify/cors";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { productRoutes } from "./routes/product";
-import fastifyJwt from "fastify-jwt";
+import fastifyJwt from "@fastify/jwt";
 import authenticate from "./plugins/authenticate";
 import authRoutes from "./routes/auth.routes";
+import jwt from "@fastify/jwt";
 
 const server = fastify({
   logger: true,

@@ -27,7 +27,11 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
     return reply.code(401).send({ message: "Invalid credentials" });
   }
 
-  const token = reply.jwtSign({ id: user.id, email: user.email });
+  const token = await reply.jwtSign({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
 
   reply.send({ token });
 };
