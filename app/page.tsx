@@ -32,10 +32,10 @@ export default function Home() {
             </div>
             <div className="flex-1 relative w-full h-[300px] md:h-[400px]">
               <Image
-                src="https://images.pexels.com/photos/6256800/pexels-photo-6256800.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                src="https://res.cloudinary.com/dxqpfefkv/image/upload/v1748500389/irish83-sxwRpLJTuXc-unsplash_xoams0.jpg"
                 alt="Badminton Equipment"
                 fill
-                className="object-cover rounded-lg"
+                className="object-cover object-[90%_10%] rounded-lg"
                 priority
               />
             </div>

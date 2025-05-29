@@ -10,6 +10,7 @@ import fastifyJwt from "@fastify/jwt";
 import authenticate from "./plugins/authenticate";
 import authRoutes from "./routes/auth.routes";
 import jwt from "@fastify/jwt";
+import { verifyToken } from "./utils/verifyToken";
 
 const server = fastify({
   logger: true,
@@ -51,6 +52,11 @@ server.register(fastifyJwt, {
 server.register(authenticate); // Register plugin
 
 server.register(authRoutes);
+
+//get profile
+server.get("/profile", { preHandler: verifyToken }, async (request, reply) => {
+  return { message: "You are logged in", user: request.user };
+});
 
 // Start the server
 const start = async () => {

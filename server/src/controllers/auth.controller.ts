@@ -1,3 +1,4 @@
+//src/controllers/auth.controller.ts
 import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from "bcrypt";
 import { pool } from "../utils/db";

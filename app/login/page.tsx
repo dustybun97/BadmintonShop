@@ -123,13 +123,6 @@ export default function LoginPage() {
                 Register
               </Link>
             </div>
-            
-            <div className="mt-6 pt-6 border-t w-full text-center text-xs text-muted-foreground">
-              <p>For demo purposes:</p>
-              <p>Regular user: any email (except admin@example.com)</p>
-              <p>Admin: admin@example.com</p>
-              <p>Any password will work (minimum 6 characters)</p>
-            </div>
           </CardFooter>
         </Card>
       </div>

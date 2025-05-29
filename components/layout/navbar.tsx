@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { ShoppingCart, User, Menu, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth-context';
-import { useCart } from '@/lib/cart-context';
-import { Badge } from '@/components/ui/badge';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ShoppingCart, User, Menu, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -42,25 +42,25 @@ export default function Navbar() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Rackets', href: '/products/category/rackets' },
-    { name: 'Shuttlecocks', href: '/products/category/shuttlecocks' },
-    { name: 'Shoes', href: '/products/category/shoes' },
-    { name: 'Apparel', href: '/products/category/apparel' },
-    { name: 'Accessories', href: '/products/category/accessories' },
+    { name: "Home", href: "/" },
+    { name: "Rackets", href: "/products/category/rackets" },
+    { name: "Shuttlecocks", href: "/products/category/shuttlecocks" },
+    { name: "Shoes", href: "/products/category/shoes" },
+    { name: "Apparel", href: "/products/category/apparel" },
+    { name: "Accessories", href: "/products/category/accessories" },
   ];
 
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         isScrolled
-          ? 'bg-background/95 backdrop-blur-md shadow-sm'
-          : 'bg-transparent'
+          ? "bg-background/95 backdrop-blur-md shadow-sm"
+          : "bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4">
@@ -83,8 +83,8 @@ export default function Navbar() {
                       href={link.href}
                       className={`px-2 py-1.5 text-sm font-medium ${
                         pathname === link.href
-                          ? 'text-primary font-semibold'
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? "text-primary font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -153,8 +153,9 @@ export default function Navbar() {
               href="/"
               className="flex items-center space-x-2 text-xl font-bold"
             >
-              <span className="hidden sm:inline-block text-primary">Ace</span>
-              <span>Badminton</span>
+              <span className="hidden sm:inline-block text-primary">
+                Shuttle Pro
+              </span>
             </Link>
 
             <nav className="ml-8 hidden lg:flex lg:space-x-4">
@@ -164,8 +165,8 @@ export default function Navbar() {
                   href={link.href}
                   className={`px-3 py-2 text-sm rounded-md transition-colors ${
                     pathname === link.href
-                      ? 'text-primary font-semibold'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      ? "text-primary font-semibold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
                   {link.name}
@@ -219,7 +220,10 @@ export default function Navbar() {
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="/admin" className="text-blue-600 dark:text-blue-400">
+                        <Link
+                          href="/admin"
+                          className="text-blue-600 dark:text-blue-400"
+                        >
                           Admin Dashboard
                         </Link>
                       </DropdownMenuItem>
@@ -251,7 +255,9 @@ export default function Navbar() {
       {/* Search Bar */}
       <div
         className={`w-full bg-background border-b border-border transition-all duration-300 ${
-          isSearchOpen ? 'py-3 opacity-100' : 'h-0 py-0 opacity-0 overflow-hidden'
+          isSearchOpen
+            ? "py-3 opacity-100"
+            : "h-0 py-0 opacity-0 overflow-hidden"
         }`}
       >
         <div className="container mx-auto px-4">
@@ -261,7 +267,12 @@ export default function Navbar() {
               placeholder="Search for products..."
               className="w-full"
             />
-            <Button variant="ghost" size="sm" onClick={() => setIsSearchOpen(false)} className="ml-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsSearchOpen(false)}
+              className="ml-2"
+            >
               Cancel
             </Button>
           </div>
