@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "../hooks/use-toast";
+import { log } from "console";
 
 export type User = {
   id: string;
@@ -87,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await res.json();
       const token = data.token;
-
+      console.log("Login response:", data);
       // ✅ เก็บ token ไว้ใน localStorage
       localStorage.setItem("token", token);
 
@@ -105,10 +106,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await profileRes.json();
       setUser(profile);
       localStorage.setItem("user", JSON.stringify(profile));
+      console.log("Profile response:", profile);
+
+      const userProfile = profile.user;
+      setUser(userProfile);
 
       toast({
         title: "Login successful",
-        description: `Welcome back, ${profile.name}!`,
+        description: `Welcome back, ${userProfile.name}!`,
       });
 
       if (profile.role === "admin") {
@@ -126,42 +131,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
+    
+    
   };
 
   // Mock register function
   const register = async (name: string, email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      // This is a mock - in a real app, you'd call your API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  setIsLoading(true);
+  try {
+    const res = await fetch("http://localhost:8080/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-      const newUser: User = {
-        id: "1", // would come from your backend
-        name,
-        email,
-        role: "user",
-      };
-
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
-
-      toast({
-        title: "Registration successful",
-        description: `Welcome, ${name}!`,
-      });
-
-      router.push("/");
-    } catch (error) {
-      console.error("Registration failed:", error);
-      toast({
-        title: "Registration failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    if (!res.ok) {
+      throw new Error("Registration failed");
     }
-  };
+
+    const data = await res.json();
+    const token = data.token;
+    const profile = data.user;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(profile));
+    setUser(profile);
+
+    toast({
+      title: "Registration successful",
+      description: `Welcome, ${name}!`,
+    });
+
+    router.push("/");
+  } catch (error) {
+    console.error("Registration failed:", error);
+    toast({
+      title: "Registration failed",
+      description: "Please try again later.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Logout function
   const logout = () => {

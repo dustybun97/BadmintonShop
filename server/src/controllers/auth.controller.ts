@@ -6,14 +6,33 @@ import { pool } from "../utils/db";
 export const register = async (req: FastifyRequest, reply: FastifyReply) => {
   const { name, email, password } = req.body as any;
 
+  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await pool.query(
-    "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+  // Insert user
+  const result = await pool.query(
+    "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, email, role",
     [name, email, hashedPassword]
   );
 
-  reply.send({ message: "User registered successfully" });
+  const newUser = result.rows[0];
+
+  // Generate JWT token
+  const token = await reply.jwtSign({
+    id: newUser.id,
+    email: newUser.email,
+    role: newUser.role,
+  });
+
+  reply.send({
+    token,
+    user: {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+    },
+  });
 };
 
 export const login = async (req: FastifyRequest, reply: FastifyReply) => {
