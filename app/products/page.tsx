@@ -1,6 +1,7 @@
+
 import { fetchProducts } from "@/data/products";
 import { Product } from "@/types/product";
-// import ProductsClient from "./products-client";
+import ProductsClient from "./products-client";
 import { Suspense } from "react";
 
 async function ProductsList() {

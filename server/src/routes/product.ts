@@ -22,5 +22,29 @@ export async function productRoutes(server: FastifyInstance) {
       return reply.status(500).send({ error: "Failed to fetch products" });
     }
   });
-}
 
+  server.get("/products/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    try {
+      // Prisma: หา product ตาม id
+      const product = await prisma.products.findUnique({
+        where: { numeric_id: Number(id) },
+      });
+
+      if (!product) {
+        return reply.status(404).send({ error: "Product not found" });
+      }
+
+      // ✅ แปลง price เป็น number
+      const formattedProduct = {
+        ...product,
+        price: parseFloat(product.price as any),
+      };
+
+      return formattedProduct;
+    } catch (error) {
+      server.log.error(error);
+      return reply.status(500).send({ error: error });
+    }
+  });
+}
