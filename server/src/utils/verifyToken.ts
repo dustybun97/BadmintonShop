@@ -15,7 +15,7 @@ export async function verifyToken(
 
     const token = authHeader.split(" ")[1];
     const user = jwt.verify(token, process.env.JWT_SECRET!);
-    request.user = user; // สมมติคุณ extend FastifyRequest มาแล้ว
+    request.user = user;
   } catch (err) {
     reply.code(403).send({ message: "Invalid token" });
   }

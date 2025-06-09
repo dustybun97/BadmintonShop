@@ -60,7 +60,7 @@ export const getProfile = async (req: any, reply: FastifyReply) => {
   const userId = req.user.id;
 
   const result = await pool.query(
-    "SELECT id, name, email FROM users WHERE id = $1",
+    "SELECT id, name, email,role FROM users WHERE id = $1",
     [userId]
   );
   const user = result.rows[0];
