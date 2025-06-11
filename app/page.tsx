@@ -76,11 +76,11 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Our Products */}
       <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold">Featured Products</h2>
+            <h2 className="text-3xl font-bold">Our Products</h2>
             <Button variant="outline" asChild className="mt-4 md:mt-0">
               <Link href="/products" className="flex items-center gap-2">
                 View All Products <ArrowRight size={16} />

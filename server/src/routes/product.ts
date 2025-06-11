@@ -8,12 +8,20 @@ import prisma from "../prisma";
 export async function productRoutes(server: FastifyInstance) {
   server.get("/products", async (request, reply) => {
     try {
-      const products = await prisma.products.findMany();
+      // 🟢 ใช้ include เพื่อดึงข้อมูล category.name มาด้วย
+      const products = await prisma.products.findMany({
+        include: {
+          category: {
+            select: { name: true }, // ดึงแค่ name ของ category
+          },
+        },
+      });
 
       // 🟢 แปลง price (string) → number
       const formattedProducts = products.map((product) => ({
         ...product,
-        price: parseFloat(product.price as any), // Prisma Decimal → string → number
+        price: parseFloat(product.price as any),
+        categoryName: product.category?.name || null, // เพิ่มชื่อ category ใน field categoryName
       }));
 
       return formattedProducts;

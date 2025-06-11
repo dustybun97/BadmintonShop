@@ -21,5 +21,5 @@ export const pool = new Pool({
   },
 });
 
-console.log("DB_HOST:", process.env.DB_HOST); // <-- ควรเห็นค่า host
+// console.log("DB_HOST:", process.env.DB_HOST); // <-- ควรเห็นค่า host
 

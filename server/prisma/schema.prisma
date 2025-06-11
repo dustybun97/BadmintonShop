@@ -59,7 +59,7 @@ model products {
   numeric_id  Int           @unique @default(autoincrement())
   cart_items  cart_items[]
   order_items order_items[]
-  categories  categories?   @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category    categories? @relation(fields: [category_id], references: [id])
 }
 
 model users {

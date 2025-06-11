@@ -11,4 +11,5 @@ export type Product = {
   rating?: number;
   reviewCount?: number;
   specifications?: Record<string, string>;
+  categoryName ?: string; // ชื่อ category ถ้ามี
 };

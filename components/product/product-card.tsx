@@ -25,8 +25,8 @@ export default function ProductCard({
 
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
-  }).format(product.price);
+    currency: "THB",
+  }).format(Number(product.price));
 
   return (
     <Card
@@ -37,7 +37,7 @@ export default function ProductCard({
       <div className="relative aspect-square overflow-hidden">
         <Link href={`/products/${product.id}`}>
           <Image
-            src={product.image_url[0]}
+            src={product.image_url}
             alt={product.name}
             fill
             className={cn(
@@ -49,7 +49,7 @@ export default function ProductCard({
           />
           {product.image_url.length > 1 && (
             <Image
-              src={product.image_url[1]}
+              src={product.image_url}
               alt={`${product.name} - alternate view`}
               fill
               className={cn(
@@ -74,7 +74,7 @@ export default function ProductCard({
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-sm text-muted-foreground capitalize">
-            {product.category_id}
+            {product.categoryName || "Uncategorized"}
           </div>
           <div className="flex items-center space-x-1">
             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />

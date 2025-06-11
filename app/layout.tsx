@@ -8,8 +8,11 @@ import Footer from '@/components/layout/footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Ace Badminton - Premium Equipment Store',
+  title: 'Shuttle Pro - Premium Equipment Store',
   description: 'Shop premium badminton equipment including rackets, shuttlecocks, shoes, and more!',
+   icons: {
+    icon: '../public/badminton-logo.png',
+  },
 };
 
 export default function RootLayout({
