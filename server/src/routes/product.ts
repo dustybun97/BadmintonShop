@@ -25,17 +25,36 @@ export async function productRoutes(server: FastifyInstance) {
 
   server.get("/products/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
+
     try {
-      // Prisma: หา product ตาม id
-      const product = await prisma.products.findUnique({
-        where: { numeric_id: Number(id) },
-      });
+      let product;
+
+      // ตรวจสอบรูปแบบว่าเป็นตัวเลขหรือ UUID
+      if (/^\d+$/.test(id)) {
+        // Numeric id
+        product = await prisma.products.findUnique({
+          where: { numeric_id: Number(id) },
+        });
+      } else if (
+        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
+          id
+        )
+      ) {
+        // UUID
+        product = await prisma.products.findUnique({
+          where: { id: id },
+        });
+      } else {
+        return reply
+          .status(400)
+          .send({ error: "Invalid id format. Must be numeric id or uuid." });
+      }
 
       if (!product) {
         return reply.status(404).send({ error: "Product not found" });
       }
 
-      // ✅ แปลง price เป็น number
+      // แปลง price (Decimal) → number
       const formattedProduct = {
         ...product,
         price: parseFloat(product.price as any),
@@ -44,7 +63,7 @@ export async function productRoutes(server: FastifyInstance) {
       return formattedProduct;
     } catch (error) {
       server.log.error(error);
-      return reply.status(500).send({ error: error });
+      return reply.status(500).send({ error: "Internal server error" });
     }
   });
 }
