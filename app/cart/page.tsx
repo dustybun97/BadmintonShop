@@ -87,8 +87,8 @@ export default function CartPage() {
                         <TableCell>
                           <div className="relative h-16 w-16 overflow-hidden rounded-md">
                             <Image
-                              src={item.product.images[0]}
-                              alt={item.product.name}
+                              src={item.product.image_url[0]}
+                              alt={item.product.name[0]}
                               fill
                               className="object-cover"
                             />

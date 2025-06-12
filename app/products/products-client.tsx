@@ -35,10 +35,24 @@ export default function ProductsClient({
   const [sortBy, setSortBy] = useState("featured");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const categories = [
-    "all",
-    ...new Set(initialProducts.map((product) => product.category)),
-  ];
+  // ดึง category ให้เป็น string ล้วนๆ ไม่ว่าจะเป็น string หรือ object
+const categories = [
+  "all",
+  ...new Set(
+    initialProducts.map(product => {
+      if (typeof product.category === "string") {
+        return product.category;
+      } else if (
+        product.category &&
+        typeof product.category === "object" &&
+        "name" in product.category
+      ) {
+        return product.category.name;
+      }
+      return ""; // กรณีอื่นๆ ถ้ามี (ควรจัดการตามจริง)
+    }).filter(Boolean) // กรองเอาค่า empty string ออก
+  )
+];
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -190,23 +204,25 @@ export default function ProductsClient({
                 <AccordionTrigger className="py-2">Category</AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2">
-                    {categories.map((cat) => (
-                      <div key={cat} className="flex items-center">
-                        <Button
-                          variant="ghost"
-                          className={`justify-start h-auto py-1 px-2 text-sm font-normal ${
-                            category === cat
-                              ? "text-primary font-medium"
-                              : "text-foreground"
-                          }`}
-                          onClick={() => handleCategoryChange(cat)}
-                        >
-                          {cat === "all"
-                            ? "All Categories"
-                            : cat.charAt(0).toUpperCase() + cat.slice(1)}
-                        </Button>
-                      </div>
-                    ))}
+                    {categories.map((cat) => {
+                      return (
+                        <div key={cat} className="flex items-center">
+                          <Button
+                            variant="ghost"
+                            className={`justify-start h-auto py-1 px-2 text-sm font-normal ${
+                              category === cat
+                                ? "text-primary font-medium"
+                                : "text-foreground"   
+                            }`}
+                            onClick={() => handleCategoryChange(cat)}
+                          >
+                            {cat === "all"
+                              ? "All Categories"
+                              : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </Button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </AccordionContent>
               </AccordionItem>

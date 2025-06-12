@@ -1,18 +1,16 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Providers } from './providers';
-import Navbar from '@/components/layout/navbar';
-import Footer from '@/components/layout/footer';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Providers } from "./providers";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Shuttle Pro - Premium Equipment Store',
-  description: 'Shop premium badminton equipment including rackets, shuttlecocks, shoes, and more!',
-   icons: {
-    icon: '../public/badminton-logo.png',
-  },
+  title: "Shuttle Pro - Premium Equipment Store",
+  description:
+    "Shop premium badminton equipment including rackets, shuttlecocks, shoes, and more!",
 };
 
 export default function RootLayout({
