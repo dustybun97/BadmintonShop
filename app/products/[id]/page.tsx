@@ -147,9 +147,9 @@ export default function ProductPage() {
             />
           </div>
 
-          {product.images.length > 1 && (
+          {product.image_url.length > 1 && (
             <div className="flex space-x-2 overflow-auto py-2">
-              {product.images.map((image, index) => (
+              {product.image_url.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveImage(index)}

@@ -39,7 +39,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Lock, CreditCard, Truck } from 'lucide-react';
 import { Address } from '@/types/order';
 
@@ -484,7 +484,7 @@ export default function CheckoutPage() {
                                   {new Intl.NumberFormat('en-US', {
                                     style: 'currency',
                                     currency: 'USD',
-                                  }).format(item.product.price * item.quantity)}
+                                  }).format(Number(item.product.price) * item.quantity)}
                                 </div>
                               </div>
                             ))}

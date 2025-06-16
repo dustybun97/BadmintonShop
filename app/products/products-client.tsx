@@ -36,23 +36,27 @@ export default function ProductsClient({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // ดึง category ให้เป็น string ล้วนๆ ไม่ว่าจะเป็น string หรือ object
-const categories = [
-  "all",
-  ...new Set(
-    initialProducts.map(product => {
-      if (typeof product.category === "string") {
-        return product.category;
-      } else if (
-        product.category &&
-        typeof product.category === "object" &&
-        "name" in product.category
-      ) {
-        return product.category.name;
-      }
-      return ""; // กรณีอื่นๆ ถ้ามี (ควรจัดการตามจริง)
-    }).filter(Boolean) // กรองเอาค่า empty string ออก
-  )
-];
+  const categories = [
+    "all",
+    ...Array.from(
+      new Set(
+        initialProducts
+          .map((product) => {
+            if (typeof product.category === "string") {
+              return product.category;
+            } else if (
+              product.category &&
+              typeof product.category === "object" &&
+              "name" in product.category
+            ) {
+              return product.categoryName;
+            }
+            return "";
+          })
+          .filter(Boolean)
+      )
+    ),
+  ];
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -108,29 +112,29 @@ const categories = [
     // Apply price filter
     if (price.min) {
       filtered = filtered.filter(
-        (product) => product.price >= parseFloat(price.min)
+        (product) => parseFloat(product.price) >= parseFloat(price.min)
       );
     }
     if (price.max) {
       filtered = filtered.filter(
-        (product) => product.price <= parseFloat(price.max)
+        (product) => parseFloat(product.price) <= parseFloat(price.max)
       );
     }
 
     // Apply sorting
     switch (sort) {
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => Number(a.price) - Number(b.price));
         break;
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => Number(b.price) - Number(a.price));
         break;
       case "newest":
         // In a real app, this would sort by date
         break;
-      case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
+      // case "rating":
+      //   filtered.sort((a, b) => b.rating - a.rating);
+      //   break;
       default: // 'featured'
         filtered.sort((a, b) =>
           a.featured === b.featured ? 0 : a.featured ? -1 : 1
@@ -205,6 +209,7 @@ const categories = [
                 <AccordionContent>
                   <div className="space-y-2">
                     {categories.map((cat) => {
+                      if (!cat) return null; // ⛔ skip ถ้า undefined
                       return (
                         <div key={cat} className="flex items-center">
                           <Button
@@ -212,7 +217,7 @@ const categories = [
                             className={`justify-start h-auto py-1 px-2 text-sm font-normal ${
                               category === cat
                                 ? "text-primary font-medium"
-                                : "text-foreground"   
+                                : "text-foreground"
                             }`}
                             onClick={() => handleCategoryChange(cat)}
                           >
@@ -301,28 +306,27 @@ const categories = [
                 <div className="space-y-2">
                   <h3 className="font-medium">Category</h3>
                   <div className="space-y-2">
-                    {categories.map((cat) => (
-                      <div key={cat} className="flex items-center">
-                        <Button
-                          variant="ghost"
-                          className={`justify-start h-auto py-1 px-2 text-sm font-normal ${
-                            category === cat
-                              ? "text-primary font-medium"
-                              : "text-foreground"
-                          }`}
-                          onClick={() => {
-                            handleCategoryChange(cat);
-                          }}
-                        >
-                          {cat === "all"
-                            ? "All Categories"
-                            : cat.charAt(0).toUpperCase() + cat.slice(1)}
-                        </Button>
-                      </div>
-                    ))}
+                    {categories
+                      .filter((cat): cat is string => typeof cat === "string")
+                      .map((cat) => (
+                        <div key={cat} className="flex items-center">
+                          <Button
+                            variant="ghost"
+                            className={`justify-start h-auto py-1 px-2 text-sm font-normal ${
+                              category === cat
+                                ? "text-primary font-medium"
+                                : "text-foreground"
+                            }`}
+                            onClick={() => handleCategoryChange(cat)}
+                          >
+                            {cat === "all"
+                              ? "All Categories"
+                              : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </Button>
+                        </div>
+                      ))}
                   </div>
                 </div>
-
                 <div className="space-y-2">
                   <h3 className="font-medium">Price Range</h3>
                   <div className="grid grid-cols-2 gap-2">

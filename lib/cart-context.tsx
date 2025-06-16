@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { Product } from '@/types/product';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Product } from "@/types/product";
 
 export type CartItem = {
   product: Product;
@@ -27,13 +33,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Load cart from localStorage on initial load
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
+    const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       try {
         setCartItems(JSON.parse(storedCart));
       } catch (error) {
-        console.error('Failed to parse stored cart:', error);
-        localStorage.removeItem('cart');
+        console.error("Failed to parse stored cart:", error);
+        localStorage.removeItem("cart");
       }
     }
   }, []);
@@ -41,14 +47,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Update localStorage and calculate subtotal whenever cart changes
   useEffect(() => {
     if (cartItems.length > 0) {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
+      localStorage.setItem("cart", JSON.stringify(cartItems));
     } else {
-      localStorage.removeItem('cart');
+      localStorage.removeItem("cart");
     }
-    
+
     // Calculate subtotal
     const newSubtotal = cartItems.reduce(
-      (total, item) => total + item.product.price * item.quantity,
+      (total, item) => total + Number(item.product.price) * item.quantity,
       0
     );
     setSubtotal(newSubtotal);
@@ -66,21 +72,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (existingItemIndex > -1) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].quantity += quantity;
-        
+
         toast({
-          title: 'Cart updated',
+          title: "Cart updated",
           description: `${product.name} quantity increased to ${updatedItems[existingItemIndex].quantity}`,
         });
-        
+
         return updatedItems;
       }
 
       // Otherwise, add it as a new item
       toast({
-        title: 'Added to cart',
+        title: "Added to cart",
         description: `${product.name} has been added to your cart`,
       });
-      
+
       return [...prevItems, { product, quantity }];
     });
   };
@@ -91,12 +97,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const updatedItems = prevItems.filter(
         (item) => item.product.id !== productId
       );
-      
+
       toast({
-        title: 'Item removed',
-        description: 'The item has been removed from your cart',
+        title: "Item removed",
+        description: "The item has been removed from your cart",
       });
-      
+
       return updatedItems;
     });
   };
@@ -109,9 +115,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity }
-          : item
+        item.product.id === productId ? { ...item, quantity } : item
       )
     );
   };
@@ -119,10 +123,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Clear cart function
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem('cart');
+    localStorage.removeItem("cart");
     toast({
-      title: 'Cart cleared',
-      description: 'All items have been removed from your cart',
+      title: "Cart cleared",
+      description: "All items have been removed from your cart",
     });
   };
 
@@ -145,7 +149,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };
