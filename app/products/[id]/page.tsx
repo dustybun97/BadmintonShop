@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchProductById } from "@/data/products";
+import { fetchProducts } from "@/data/products";
 import { useCart } from "@/lib/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -147,26 +148,23 @@ export default function ProductPage() {
             />
           </div>
 
-          {product.image_url.length > 1 && (
+          {product.image_url && (
             <div className="flex space-x-2 overflow-auto py-2">
-              {product.image_url.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveImage(index)}
-                  className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 ${
-                    activeImage === index
-                      ? "border-primary"
-                      : "border-border hover:border-muted-foreground"
-                  }`}
-                >
-                  <Image
-                    src={image}
-                    alt={`${product.name} - view ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </button>
-              ))}
+              <button
+                onClick={() => setActiveImage(0)}
+                className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 ${
+                  activeImage === 0
+                    ? "border-primary"
+                    : "border-border hover:border-muted-foreground"
+                }`}
+              >
+                <Image
+                  src={product.image_url}
+                  alt={`${product.name} - view 1`}
+                  fill
+                  className="object-cover"
+                />
+              </button>
             </div>
           )}
         </div>
@@ -176,7 +174,7 @@ export default function ProductPage() {
           <div>
             <h1 className="text-3xl font-bold">{product.name}</h1>
             <div className="flex items-center space-x-4 mt-2">
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
@@ -190,7 +188,7 @@ export default function ProductPage() {
                 <span className="ml-2 text-sm text-muted-foreground">
                   ({product.reviewCount} reviews)
                 </span>
-              </div>
+              </div> */}
               <div className="text-sm text-muted-foreground">
                 SKU: {product.id.toUpperCase()}
               </div>
@@ -309,7 +307,7 @@ export default function ProductPage() {
               Technical Specifications
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(product.specifications).map(([key, value]) => (
+              {Object.entries(product.description).map(([key, value]) => (
                 <div key={key} className="flex border-b pb-2">
                   <span className="w-1/2 font-medium capitalize">
                     {key.replace(/([A-Z])/g, " $1").trim()}
