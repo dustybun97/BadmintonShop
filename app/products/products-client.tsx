@@ -112,12 +112,12 @@ export default function ProductsClient({
     // Apply price filter
     if (price.min) {
       filtered = filtered.filter(
-        (product) => parseFloat(product.price) >= parseFloat(price.min)
+        (product) => parseFloat(product.price.toString()) >= parseFloat(price.min)
       );
     }
     if (price.max) {
       filtered = filtered.filter(
-        (product) => parseFloat(product.price) <= parseFloat(price.max)
+        (product) => parseFloat(product.price.toString()) <= parseFloat(price.max)
       );
     }
 

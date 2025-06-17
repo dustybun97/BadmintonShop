@@ -92,8 +92,8 @@ export default function CartPage() {
                         <TableCell>
                           <div className="relative h-16 w-16 overflow-hidden rounded-md">
                             <Image
-                              src={item.product.image_url[0]}
-                              alt={item.product.name?.toString()}
+                              src={item.product.image_url}
+                              alt={String(item.product.name || "Product")}
                               fill
                               className="object-cover"
                             />
@@ -104,16 +104,20 @@ export default function CartPage() {
                             href={`/products/${item.product.id}`}
                             className="font-medium hover:text-primary transition-colors"
                           >
-                            {item.product.name?.toString()}
+                            {String(item.product.name || "Unknown Product")}
                           </Link>
                           <div className="text-sm text-muted-foreground capitalize">
-                            {item.product.category}
+                            {String(
+                              item.product.category ||
+                                item.product.categoryName ||
+                                "Uncategorized"
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          {new Intl.NumberFormat("en-US", {
+                          {new Intl.NumberFormat("th-TH", {
                             style: "currency",
-                            currency: "USD",
+                            currency: "THB",
                           }).format(Number(item.product.price))}
                         </TableCell>
                         <TableCell>
@@ -152,9 +156,9 @@ export default function CartPage() {
                           </div>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {new Intl.NumberFormat("en-US", {
+                          {new Intl.NumberFormat("th-TH", {
                             style: "currency",
-                            currency: "USD",
+                            currency: "THB",
                           }).format(Number(item.product.price) * item.quantity)}
                         </TableCell>
                         <TableCell>
@@ -203,9 +207,9 @@ export default function CartPage() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>
-                      {new Intl.NumberFormat("en-US", {
+                      {new Intl.NumberFormat("th-TH", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "THB",
                       }).format(subtotal)}
                     </span>
                   </div>
@@ -214,18 +218,18 @@ export default function CartPage() {
                     <span>
                       {shipping === 0
                         ? "Free"
-                        : new Intl.NumberFormat("en-US", {
+                        : new Intl.NumberFormat("th-TH", {
                             style: "currency",
-                            currency: "USD",
+                            currency: "THB",
                           }).format(shipping)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tax (7%)</span>
                     <span>
-                      {new Intl.NumberFormat("en-US", {
+                      {new Intl.NumberFormat("th-TH", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "THB",
                       }).format(tax)}
                     </span>
                   </div>
@@ -234,9 +238,9 @@ export default function CartPage() {
                     <div className="flex justify-between">
                       <span className="font-semibold">Total</span>
                       <span className="font-semibold">
-                        {new Intl.NumberFormat("en-US", {
+                        {new Intl.NumberFormat("th-TH", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "THB",
                         }).format(total)}
                       </span>
                     </div>

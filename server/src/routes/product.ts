@@ -42,6 +42,11 @@ export async function productRoutes(server: FastifyInstance) {
         // Numeric id
         product = await prisma.products.findUnique({
           where: { numeric_id: Number(id) },
+          include: {
+            category: {
+              select: { name: true }, // ดึงแค่ name ของ category
+            },
+          },
         });
       } else if (
         /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
@@ -51,6 +56,11 @@ export async function productRoutes(server: FastifyInstance) {
         // UUID
         product = await prisma.products.findUnique({
           where: { id: id },
+          include: {
+            category: {
+              select: { name: true }, // ดึงแค่ name ของ category
+            },
+          },
         });
       } else {
         return reply
@@ -62,10 +72,11 @@ export async function productRoutes(server: FastifyInstance) {
         return reply.status(404).send({ error: "Product not found" });
       }
 
-      // แปลง price (Decimal) → number
+      // แปลง price (Decimal) → number และเพิ่ม categoryName
       const formattedProduct = {
         ...product,
         price: parseFloat(product.price as any),
+        categoryName: product.category?.name || null, // เพิ่มชื่อ category ใน field categoryName
       };
 
       return formattedProduct;
