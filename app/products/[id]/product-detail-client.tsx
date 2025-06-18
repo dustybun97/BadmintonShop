@@ -84,10 +84,14 @@ export default function ProductDetailClient({
             <li className="flex items-center space-x-2">
               <span>/</span>
               <Link
-                href={`/products/category/${product.category}`}
+                href={`/products/category/${
+                  typeof product.category === "string"
+                    ? product.category
+                    : product.category_name || "uncategorized"
+                }`}
                 className="hover:text-foreground capitalize"
               >
-                {product.categoryName}
+                {product.category_name}
               </Link>
             </li>
             <li className="flex items-center space-x-2">
@@ -254,7 +258,7 @@ export default function ProductDetailClient({
             <h3 className="text-lg font-semibold mb-4">
               Technical Specifications
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(product.description).map(([key, value]) => (
                 <div key={key} className="flex border-b pb-2">
                   <span className="w-1/2 font-medium capitalize">
@@ -263,7 +267,7 @@ export default function ProductDetailClient({
                   <span className="w-1/2">{value}</span>
                 </div>
               ))}
-            </div>
+            </div> */}
           </TabsContent>
 
           <TabsContent value="shipping" className="mt-6 p-6 border rounded-lg">

@@ -25,6 +25,8 @@ type AuthContextType = {
   logout: () => void;
   isLoading: boolean;
   isAdmin: boolean;
+  updateProfilePicture: (imageUrl: string) => Promise<void>;
+  updateProfileName: (name: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,38 +39,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check if the user is logged in on initial load
   useEffect(() => {
-  const fetchProfile = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch("http://localhost:8080/api/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch profile");
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+      console.log(
+        "Fetching profile with token:",
+        token ? "Token exists" : "No token"
+      );
+      if (!token) {
+        setIsLoading(false);
+        return;
       }
 
-      const profile = await res.json();
-      setUser(profile);
-      localStorage.setItem("user", JSON.stringify(profile));
-    } catch (error) {
-      console.error("Auto-login failed:", error);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      try {
+        const res = await fetch("http://localhost:8080/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  fetchProfile();
-}, []);
+        if (!res.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const profile = await res.json();
+        console.log("Profile response from server:", profile);
+        const userProfile = profile.user;
+        setUser(userProfile);
+        localStorage.setItem("user", JSON.stringify(userProfile));
+        console.log("Set user to:", userProfile);
+      } catch (error) {
+        console.error("Auto-login failed:", error);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   //login function -this would call an API for login
   const login = async (email: string, password: string) => {
@@ -89,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json();
       const token = data.token;
       console.log("Login response:", data);
+      console.log("Token received:", token ? "Token exists" : "No token");
       // ✅ เก็บ token ไว้ใน localStorage
       localStorage.setItem("token", token);
 
@@ -104,12 +114,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const profile = await profileRes.json();
-      setUser(profile);
-      localStorage.setItem("user", JSON.stringify(profile));
       console.log("Profile response:", profile);
 
       const userProfile = profile.user;
       setUser(userProfile);
+      localStorage.setItem("user", JSON.stringify(userProfile));
 
       toast({
         title: "Login successful",
@@ -131,56 +140,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-    
-    
   };
 
   // Mock register function
   const register = async (name: string, email: string, password: string) => {
-  setIsLoading(true);
-  try {
-    const res = await fetch("http://localhost:8080/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, password }),
-    });
+    setIsLoading(true);
+    try {
+      const res = await fetch("http://localhost:8080/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    if (!res.ok) {
-      throw new Error("Registration failed");
+      if (!res.ok) {
+        throw new Error("Registration failed");
+      }
+
+      const data = await res.json();
+      const token = data.token;
+      const profile = data.user;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(profile));
+      setUser(profile);
+
+      toast({
+        title: "Registration successful",
+        description: `Welcome, ${name}!`,
+      });
+
+      router.push("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      toast({
+        title: "Registration failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    const data = await res.json();
-    const token = data.token;
-    const profile = data.user;
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(profile));
-    setUser(profile);
-
-    toast({
-      title: "Registration successful",
-      description: `Welcome, ${name}!`,
-    });
-
-    router.push("/");
-  } catch (error) {
-    console.error("Registration failed:", error);
-    toast({
-      title: "Registration failed",
-      description: "Please try again later.",
-      variant: "destructive",
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
@@ -213,6 +221,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname, user, isLoading, router]);
 
+  // Update profile picture function
+  const updateProfilePicture = async (imageUrl: string) => {
+    if (user) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:8080/api/profile/picture", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ profilePicture: imageUrl }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to update profile picture");
+        }
+
+        const data = await res.json();
+        const updatedUser = data.user;
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        toast({
+          title: "Profile picture updated",
+          description: "Your profile picture has been updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating profile picture:", error);
+        toast({
+          title: "Update failed",
+          description: "Failed to update profile picture. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  // Update profile name function
+  const updateProfileName = async (name: string) => {
+    if (user) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:8080/api/profile/name", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to update profile name");
+        }
+
+        const data = await res.json();
+        const updatedUser = data.user;
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        toast({
+          title: "Profile name updated",
+          description: "Your profile name has been updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error updating profile name:", error);
+        toast({
+          title: "Update failed",
+          description: "Failed to update profile name. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -222,6 +304,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         isLoading,
         isAdmin: user?.role === "admin" || false,
+        updateProfilePicture,
+        updateProfileName,
       }}
     >
       {children}

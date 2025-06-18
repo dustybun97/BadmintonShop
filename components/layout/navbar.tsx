@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingCart, User, Menu, Search } from "lucide-react";
+import { ShoppingCart, User, Menu, Search, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { Badge } from "@/components/ui/badge";
@@ -23,15 +23,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, updateProfilePicture, updateProfileName } =
+    useAuth();
   const { cartItems } = useCart();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [editingName, setEditingName] = useState(user?.name || "");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +60,12 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      setEditingName(user.name);
+    }
+  }, [user]);
+
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Rackets", href: "/products/category/rackets" },
@@ -54,6 +74,30 @@ export default function Navbar() {
     { name: "Apparel", href: "/products/category/apparel" },
     { name: "Accessories", href: "/products/category/accessories" },
   ];
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      updateProfilePicture(imageUrl);
+    }
+  };
+
+  const handleNameSave = () => {
+    if (editingName.trim()) {
+      updateProfileName(editingName.trim());
+      setIsEditingName(false);
+    }
+  };
+
+  const handleProfileDialogOpen = () => {
+    setEditingName(user?.name || "");
+    setIsProfileDialogOpen(true);
+  };
 
   return (
     <header
@@ -205,16 +249,48 @@ export default function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className="p-0">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.profilePicture} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex items-center gap-2 p-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.profilePicture} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-medium">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/account">My Account</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/account/orders">My Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleProfileDialogOpen}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Profile
                   </DropdownMenuItem>
                   {isAdmin && (
                     <>
@@ -278,6 +354,69 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Profile Editing Dialog */}
+      <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative">
+                <Avatar
+                  className="w-24 h-24 cursor-pointer"
+                  onClick={handleImageClick}
+                >
+                  <AvatarImage
+                    src={user?.profilePicture}
+                    alt="Profile picture"
+                  />
+                  <AvatarFallback>
+                    {user?.name
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer">
+                  <Edit className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Click on the avatar to change your profile picture
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="name" className="text-sm font-medium">
+                Name
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  id="name"
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  disabled={!isEditingName}
+                />
+                {!isEditingName ? (
+                  <Button onClick={() => setIsEditingName(true)}>Edit</Button>
+                ) : (
+                  <Button onClick={handleNameSave}>Save</Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

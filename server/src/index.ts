@@ -49,14 +49,13 @@ server.get("/health", async () => {
 server.register(fastifyJwt, {
   secret: process.env.JWT_SECRET!,
 });
+console.log(
+  "JWT Secret configured:",
+  process.env.JWT_SECRET ? "Secret exists" : "No secret found"
+);
 server.register(authenticate); // Register plugin
 
 server.register(authRoutes);
-
-//get profile
-server.get("/profile", { preHandler: verifyToken }, async (request, reply) => {
-  return { message: "You are logged in", user: request.user };
-});
 
 // Start the server
 const start = async () => {

@@ -49,7 +49,7 @@ export default function ProductsClient({
               typeof product.category === "object" &&
               "name" in product.category
             ) {
-              return product.categoryName;
+              return product.category_name;
             }
             return "";
           })
@@ -106,18 +106,31 @@ export default function ProductsClient({
 
     // Apply category filter
     if (cat && cat !== "all") {
-      filtered = filtered.filter((product) => product.category === cat);
+      filtered = filtered.filter((product) => {
+        if (typeof product.category === "string") {
+          return product.category === cat;
+        } else if (
+          product.category &&
+          typeof product.category === "object" &&
+          "name" in product.category
+        ) {
+          return product.category_name === cat;
+        }
+        return false;
+      });
     }
 
     // Apply price filter
     if (price.min) {
       filtered = filtered.filter(
-        (product) => parseFloat(product.price.toString()) >= parseFloat(price.min)
+        (product) =>
+          parseFloat(product.price.toString()) >= parseFloat(price.min)
       );
     }
     if (price.max) {
       filtered = filtered.filter(
-        (product) => parseFloat(product.price.toString()) <= parseFloat(price.max)
+        (product) =>
+          parseFloat(product.price.toString()) <= parseFloat(price.max)
       );
     }
 

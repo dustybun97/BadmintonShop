@@ -2,8 +2,8 @@
 import { Product } from "@/types/product";
 
 // URL ของ backend API
-const API_URL ="http://localhost:8080"; // หรือ URL ที่ deploy แล้ว
-//process.env.NEXT_PUBLIC_API_URL || 
+const API_URL = "http://localhost:8080"; // หรือ URL ที่ deploy แล้ว
+//process.env.NEXT_PUBLIC_API_URL ||
 /**
  * ดึงข้อมูลสินค้าทั้งหมดจาก backend
  */

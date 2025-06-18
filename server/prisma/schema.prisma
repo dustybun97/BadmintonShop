@@ -59,19 +59,20 @@ model products {
   numeric_id  Int           @unique @default(autoincrement())
   cart_items  cart_items[]
   order_items order_items[]
-  category    categories? @relation(fields: [category_id], references: [id])
+  category    categories?   @relation(fields: [category_id], references: [id])
 }
 
 model users {
-  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String       @db.VarChar(100)
-  email         String       @unique @db.VarChar(150)
-  password_hash String
-  role          user_role?   @default(user)
-  created_at    DateTime?    @default(now()) @db.Timestamp(6)
-  numeric_id    Int          @unique @default(autoincrement())
-  cart_items    cart_items[]
-  orders        orders[]
+  id                  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String       @db.VarChar(100)
+  email               String       @unique @db.VarChar(150)
+  password_hash       String
+  role                user_role?   @default(user)
+  created_at          DateTime?    @default(now()) @db.Timestamp(6)
+  numeric_id          Int          @unique @default(autoincrement())
+  profile_picture_url String?
+  cart_items          cart_items[]
+  orders              orders[]
 }
 
 enum order_status {
