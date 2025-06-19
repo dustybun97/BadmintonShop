@@ -15,6 +15,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
+  profilePicture?: string; // Optional profile picture URL
   role: "user" | "admin";
 };
 
